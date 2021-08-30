@@ -12,8 +12,10 @@ extension UIAlertController {
     static func createAlert(withTitle title: String, andMessage message: String) -> UIAlertController {
         UIAlertController(title: title, message: message, preferredStyle: .alert) }
     
-    func action(completion: @escaping(String) -> Void){
-        let saveAction = UIAlertAction(title: "Save", style: .default) { _ in
+    func action(with taskList: TaskList?, completion: @escaping(String) -> Void){
+        
+        let doneButton = taskList == nil ? "Save" : "Update"
+        let saveAction = UIAlertAction(title: doneButton, style: .default) { _ in
             guard let newValue = self.textFields?.first?.text else { return }
             guard !newValue.isEmpty else { return }
             completion(newValue)
@@ -26,12 +28,15 @@ extension UIAlertController {
         
         addTextField { textField in
             textField.placeholder = "List name"
+            textField.text = taskList?.name
         }
     }
     
-    func action(completion: @escaping(String, String) -> Void) {
+    func action(with task: Task?, completion: @escaping(String, String) -> Void) {
         
-        let saveAction = UIAlertAction(title: "Save", style: .default) { _ in
+        let title = task == nil ? "Save" : "Update"
+        
+        let saveAction = UIAlertAction(title: title, style: .default) { _ in
             guard let newtask = self.textFields?.first?.text else { return }
             guard !newtask.isEmpty else {return}
             
@@ -49,9 +54,11 @@ extension UIAlertController {
         
         addTextField { textField in
             textField.placeholder = "New Task"
+            textField.text = task?.name
         }
         addTextField { textField in
             textField.placeholder = "Note"
+            textField.text = task?.note
         }
     }
 }

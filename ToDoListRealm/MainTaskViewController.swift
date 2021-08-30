@@ -16,8 +16,11 @@ class MainTaskViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
        // createTastData()
+        
+        
         taskLists = StorageManager.shared.realm.objects(TaskList.self)
        
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -27,10 +30,8 @@ class MainTaskViewController: UIViewController {
 
     @IBAction func addButtonPressed(_ sender: Any) {
         showAlert()
-        
     }
-    @IBAction func editButtonPressed(_ sender: Any) {
-    }
+
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let indexPath = mainTaskTableView.indexPathForSelectedRow else { return }
@@ -85,16 +86,36 @@ extension MainTaskViewController: UITableViewDelegate, UITableViewDataSource {
             StorageManager.shared.delete(taskList: currentList)
             self.mainTaskTableView.deleteRows(at: [indexPath], with: .automatic)
         }
-        return UISwipeActionsConfiguration(actions: [deleteAction])
-    }
-    
-    private func showAlert() {
-        let alert = UIAlertController.createAlert(withTitle: "New List", andMessage: "Add new list")
-        
-        alert.action { newValue in
-            self.save(taskList: newValue)
+        let editAction = UIContextualAction(style: .normal, title: "Edit") { _, _, isDone in
+            self.showAlert(with: currentList) {
+                self.mainTaskTableView.reloadRows(at: [indexPath], with: .automatic)
+            }
+            isDone(true)
         }
+        let doneAction = UIContextualAction(style: .normal, title: "Done") { _, _, isDone in
+            StorageManager.shared.done(taskList: currentList)
+            self.mainTaskTableView.reloadRows(at: [indexPath], with: .automatic)
+            isDone(true)
+        }
+        editAction.backgroundColor = .orange
+        doneAction.backgroundColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
+        return UISwipeActionsConfiguration(actions: [doneAction,editAction,deleteAction])
+    }
+    // Параметры в функции showAlert не обязательные, если они есть, то мы редактируем запись, если нет параметров, то сохраняем
+    
+    private func showAlert(with taskList: TaskList? = nil, completion: (()-> Void)? = nil) {
         
+        let title = taskLists != nil ? "Edit list" : "New List"
+        let alert = UIAlertController.createAlert(withTitle: title, andMessage: "Add new list")
+        
+        alert.action(with: taskList) { newValue in
+            if let taskList = taskList, let completion = completion {
+                StorageManager.shared.edit(taskList: taskList, newValue: newValue)
+                completion()
+            } else {
+                self.save(taskList: newValue)
+            }
+        }
         present(alert, animated: true)
     }
     

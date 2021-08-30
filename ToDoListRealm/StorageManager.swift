@@ -34,6 +34,18 @@ class StorageManager {
         }
     }
     
+    func edit(taskList: TaskList, newValue: String) {
+        write {
+            taskList.name = newValue
+        }
+    }
+    
+    func done(taskList: TaskList) {
+        write {
+            taskList.tasks.setValue(true, forKey: "isCompleted")
+        }
+    }
+    
     // MARK: Work with tasks
     
     func save(task: Task, in taskList: TaskList) {
@@ -52,5 +64,24 @@ class StorageManager {
             print(error)
         }
         
+    }
+    
+    func delete(task: Task) {
+        write {
+            realm.delete(task) // удаляем все задачи
+        }
+    }
+    
+    func edit(task: Task, name: String, note: String) {
+        write {
+            task.name = name
+            task.note = note
+        }
+    }
+    
+    func done(task: Task) {
+        write {
+            task.isCompleted.toggle()
+        }
     }
 }

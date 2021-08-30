@@ -51,6 +51,39 @@ class TasksTableViewController: UITableViewController {
         return cell
     }
     
+    
+   override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+    let task = indexPath.section == 0 ? currentTasks[indexPath.row] : completedTasks[indexPath.row]
+        
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { _, _, _ in
+            StorageManager.shared.delete(task: task)
+            self.tableView.deleteRows(at: [indexPath], with: .automatic)
+        }
+        let editAction = UIContextualAction(style: .normal, title: "Edit") { _, _, isDone in
+            self.showAlert(with: task) {
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+            }
+            isDone(true)
+        }
+    
+        let doneTitle = indexPath.section == 0 ? "Done" : "Undone"
+    
+        let doneAction = UIContextualAction(style: .normal, title: doneTitle) { _, _, isDone in
+            StorageManager.shared.done(task: task)
+            
+            let indexPathForCurrentTask = IndexPath(row: self.currentTasks.count - 1, section: 0)
+            let indexPathForCompletedTask = IndexPath(row: self.completedTasks.count - 1, section: 1)
+            let destinationIndexRow = indexPath.section == 0 ? indexPathForCompletedTask : indexPathForCurrentTask
+            
+            tableView.moveRow(at: indexPath, to: destinationIndexRow)
+            isDone(true)
+        }
+        editAction.backgroundColor = .orange
+        doneAction.backgroundColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
+        return UISwipeActionsConfiguration(actions: [doneAction,editAction,deleteAction])
+    }
+    
     @objc private func addButtonPressed() {
         showAlert()
     }
@@ -58,12 +91,19 @@ class TasksTableViewController: UITableViewController {
 
 extension TasksTableViewController {
     
-   private func showAlert() {
+    private func showAlert(with task: Task? = nil, completion: (() -> Void)? = nil) {
     
-    let alert = UIAlertController.createAlert(withTitle: "New Task", andMessage: "Add new task")
+    let title = task != nil ? "Edit task" : "New Task"
+        
+    let alert = UIAlertController.createAlert(withTitle: title, andMessage: "Add new task")
     
-    alert.action { newTask, note in
-        self.saveTask(withName: newTask, andNote: note)
+        alert.action(with: task) { newTask, note in
+        if let task = task, let completion = completion {
+            StorageManager.shared.edit(task: task, name: newTask, note: note)
+            completion()
+        } else {
+            self.saveTask(withName: newTask, andNote: note)
+        }
     }
     present(alert, animated: true)
         
