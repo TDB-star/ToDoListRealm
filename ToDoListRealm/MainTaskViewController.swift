@@ -39,6 +39,11 @@ class MainTaskViewController: UIViewController {
         guard let tasksVC = segue.destination as? TasksTableViewController else { return }
         tasksVC.taskList = taskList
     }
+    
+    @IBAction func sortedList(_ sender: UISegmentedControl) {
+        taskLists = sender.selectedSegmentIndex == 0 ? taskLists.sorted(byKeyPath: "date") : taskLists.sorted(byKeyPath: "name") //сортировка по ключу в нашей модели
+        mainTaskTableView.reloadData()
+    }
 }
 
 extension MainTaskViewController: UITableViewDelegate, UITableViewDataSource {
@@ -51,10 +56,7 @@ extension MainTaskViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MainTasksCell", for: indexPath)
         
         let taskList = taskLists[indexPath.row]
-        var content = cell.defaultContentConfiguration()
-        content.text = taskList.name
-        content.secondaryText = "\(taskList.tasks.count)"
-        cell.contentConfiguration = content
+        cell.configure(with: taskList )
         return cell
     }
     private func createTastData() {

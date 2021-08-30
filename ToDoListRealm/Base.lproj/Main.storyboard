@@ -17,13 +17,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="detailsCell" id="xkJ-oW-JVT">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="gray" indentationWidth="10" reuseIdentifier="detailsCell" id="xkJ-oW-JVT">
                                 <rect key="frame" x="0.0" y="24.5" width="414" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xkJ-oW-JVT" id="ImA-ED-JLe">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
+                                <color key="backgroundColor" systemColor="secondarySystemGroupedBackgroundColor"/>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -31,7 +32,7 @@
                             <outlet property="delegate" destination="bx8-VJ-Fxy" id="8fz-Pv-ngT"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="v7j-bj-3Al">
+                    <navigationItem key="navigationItem" largeTitleDisplayMode="never" id="v7j-bj-3Al">
                         <nil key="title"/>
                     </navigationItem>
                 </tableViewController>
@@ -74,9 +75,12 @@
                                     <constraint firstAttribute="height" constant="36" id="vEX-H2-QqS"/>
                                 </constraints>
                                 <segments>
-                                    <segment title="First"/>
-                                    <segment title="Second"/>
+                                    <segment title="Date"/>
+                                    <segment title="A-Z"/>
                                 </segments>
+                                <connections>
+                                    <action selector="sortedList:" destination="2wd-Qc-Aa2" eventType="valueChanged" id="Mhu-7J-UcQ"/>
+                                </connections>
                             </segmentedControl>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="7ID-ZJ-yb7"/>
@@ -104,7 +108,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iLT-Ab-fha" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="937.68115942028987" y="75.669642857142847"/>
+            <point key="canvasLocation" x="978" y="76"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="qvn-Sm-dof">
@@ -126,6 +130,9 @@
         </scene>
     </scenes>
     <resources>
+        <systemColor name="secondarySystemGroupedBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
