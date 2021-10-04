@@ -15,16 +15,12 @@ class MainTaskViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       // createTastData()
-        
         
         taskLists = StorageManager.shared.realm.objects(TaskList.self)
-       
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
+        super.viewWillAppear(animated)
         mainTaskTableView.reloadData()
     }
 
@@ -32,7 +28,6 @@ class MainTaskViewController: UIViewController {
         showAlert()
     }
 
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let indexPath = mainTaskTableView.indexPathForSelectedRow else { return }
         let taskList = taskLists[indexPath.row]
@@ -41,8 +36,18 @@ class MainTaskViewController: UIViewController {
     }
     
     @IBAction func sortedList(_ sender: UISegmentedControl) {
-        taskLists = sender.selectedSegmentIndex == 0 ? taskLists.sorted(byKeyPath: "date") : taskLists.sorted(byKeyPath: "name") //сортировка по ключу в нашей модели
+        taskLists = sender.selectedSegmentIndex == 0
+            ? taskLists.sorted(byKeyPath: "date")
+            : taskLists.sorted(byKeyPath: "name") //сортировка по ключу в нашей модели
         mainTaskTableView.reloadData()
+    }
+    
+    @IBAction func toggleTableEdit(sender: UIBarButtonItem) {
+        mainTaskTableView.setEditing(!mainTaskTableView.isEditing, animated: true)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem:
+                                        (mainTaskTableView.isEditing) ? .done : .edit,
+                                         target: self,
+                                         action: #selector(toggleTableEdit))
     }
 }
 
@@ -56,59 +61,48 @@ extension MainTaskViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MainTasksCell", for: indexPath)
         
         let taskList = taskLists[indexPath.row]
-        cell.configure(with: taskList )
+        cell.configure(with: taskList)
         return cell
     }
-    private func createTastData() {
-        let milk = Task()
-        milk.name = "Milk"
-        milk.note = "4L"
-        
-        let shoppingList = TaskList()
-        shoppingList.name = "Shopping List"
-        
-        shoppingList.tasks.append(milk)
-        
-        let bread = Task(value: ["Bread", "", Date(), true])
-        let apples = Task(value: ["name": "Appels", "note": "1KG"])
-        
-        shoppingList.tasks.insert(contentsOf: [bread, apples], at: 0)
-        
-        let moviesList = TaskList(value: ["Movies List", Date(),[["Best film ever"],["The best of the best","Must Have", Date(), true]]])
-        
-        DispatchQueue.main.async {
-            StorageManager.shared.save(taskLists: [shoppingList, moviesList])
-        }
-    }
     
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    func tableView(_ tableView: UITableView,
+        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) ->
+        UISwipeActionsConfiguration? {
         
         let currentList = taskLists[indexPath.row]
+        
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { _, _, _ in
             StorageManager.shared.delete(taskList: currentList)
             self.mainTaskTableView.deleteRows(at: [indexPath], with: .automatic)
         }
+        
         let editAction = UIContextualAction(style: .normal, title: "Edit") { _, _, isDone in
             self.showAlert(with: currentList) {
                 self.mainTaskTableView.reloadRows(at: [indexPath], with: .automatic)
             }
             isDone(true)
         }
+        
         let doneAction = UIContextualAction(style: .normal, title: "Done") { _, _, isDone in
             StorageManager.shared.done(taskList: currentList)
             self.mainTaskTableView.reloadRows(at: [indexPath], with: .automatic)
             isDone(true)
         }
+        
         editAction.backgroundColor = .orange
         doneAction.backgroundColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
+        
+        let swipeAction = UISwipeActionsConfiguration()
+        swipeAction.performsFirstActionWithFullSwipe = false // отменяем полный свайп
+        
         return UISwipeActionsConfiguration(actions: [doneAction,editAction,deleteAction])
     }
     // Параметры в функции showAlert не обязательные, если они есть, то мы редактируем запись, если нет параметров, то сохраняем
     
     private func showAlert(with taskList: TaskList? = nil, completion: (()-> Void)? = nil) {
         
-        let title = taskLists != nil ? "Edit list" : "New List"
-        let alert = UIAlertController.createAlert(withTitle: title, andMessage: "Add new list")
+        let title = taskList != nil ? "Edit list" : "New List"
+        let alert = UIAlertController.createAlert(withTitle: title, andMessage: "Add new value")
         
         alert.action(with: taskList) { newValue in
             if let taskList = taskList, let completion = completion {

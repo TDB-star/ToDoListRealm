@@ -25,7 +25,6 @@ class TasksTableViewController: UITableViewController {
         navigationItem.rightBarButtonItems = [addButton, editButtonItem]
     }
     
-
     override func numberOfSections(in tableView: UITableView) -> Int {
         
         return 2
@@ -39,7 +38,6 @@ class TasksTableViewController: UITableViewController {
         section == 0 ? "CURRENT TASKS" : "COMPLETED TASKS"
     }
     
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "detailsCell", for: indexPath)
         let task = indexPath.section == 0 ? currentTasks[indexPath.row] : completedTasks[indexPath.row]
@@ -50,7 +48,6 @@ class TasksTableViewController: UITableViewController {
 
         return cell
     }
-    
     
    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         

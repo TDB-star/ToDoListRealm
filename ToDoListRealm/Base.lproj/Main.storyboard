@@ -96,6 +96,11 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Task List" largeTitleDisplayMode="always" id="Tpu-vk-uSC">
+                        <barButtonItem key="leftBarButtonItem" systemItem="edit" id="zLO-uO-bs1">
+                            <connections>
+                                <action selector="toggleTableEditWithSender:" destination="2wd-Qc-Aa2" id="Lfc-JO-fwV"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" style="done" systemItem="add" id="0Zt-4i-v0z">
                             <connections>
                                 <action selector="addButtonPressed:" destination="2wd-Qc-Aa2" id="cRq-EE-vun"/>
