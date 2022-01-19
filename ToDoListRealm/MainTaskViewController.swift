@@ -41,6 +41,7 @@ class MainTaskViewController: UIViewController {
             : taskLists.sorted(byKeyPath: "name") //сортировка по ключу в нашей модели
         mainTaskTableView.reloadData()
     }
+    /* кнопки Edit и Done на навигационной панели, в случае когда используем tableView в связке с tableViewController */
     
     @IBAction func toggleTableEdit(sender: UIBarButtonItem) {
         mainTaskTableView.setEditing(!mainTaskTableView.isEditing, animated: true)
